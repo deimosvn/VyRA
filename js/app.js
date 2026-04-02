@@ -193,7 +193,7 @@ const AQI_CATEGORIES = [
 
 const CORRIDOR_COLORS = {
     industrial: '#ff7e00',
-    river: '#00b4d8',
+    river: '#0ea5e9',
     urban: '#ff0000',
     wind: '#48cae4',
     residential: '#00e400',
@@ -241,7 +241,7 @@ function randomFloat(min, max, decimals = 1) {
 // HEAT WAVE CATEGORIES & DATA
 // ============================================================
 const HEAT_CATEGORIES = [
-    { min: 0, max: 34, label: 'Normal', color: '#00b4d8', bg: 'rgba(0,180,216,0.15)', icon: 'fa-check-circle', level: 'low' },
+    { min: 0, max: 34, label: 'Normal', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', icon: 'fa-check-circle', level: 'low' },
     { min: 35, max: 39, label: 'Precaución', color: '#ffc800', bg: 'rgba(255,200,0,0.15)', icon: 'fa-exclamation-triangle', level: 'moderate' },
     { min: 40, max: 44, label: 'Peligro', color: '#ff7e00', bg: 'rgba(255,126,0,0.15)', icon: 'fa-fire', level: 'high' },
     { min: 45, max: 60, label: 'Extremo', color: '#ff0000', bg: 'rgba(255,0,0,0.15)', icon: 'fa-skull-crossbones', level: 'extreme' }
@@ -494,8 +494,8 @@ function createPopupContent(sensor, data) {
                     <span class="popup-reading-value">${data.co}</span>
                 </div>
             </div>
-            <div style="font-size:11px; color:#8fa3b8; padding:6px 0; border-top:1px solid rgba(255,255,255,0.06)">
-                <i class="fas fa-info-circle" style="color:#00b4d8"></i> ${category.advice}
+            <div style="font-size:11px; color:#6b7280; padding:6px 0; border-top:1px solid rgba(0,0,0,0.06)">
+                <i class="fas fa-info-circle" style="color:#0ea5e9"></i> ${category.advice}
             </div>
             ${corridorHTML}
         </div>
@@ -798,7 +798,7 @@ function showCorridorDetail(corridorId) {
             <i class="fas fa-info-circle"></i>
             <div>
                 <div class="info-label">Descripción</div>
-                <div class="info-value" style="font-size:13px; font-weight:400; color:#8fa3b8">${corridor.description}</div>
+                <div class="info-value" style="font-size:13px; font-weight:400; color:#6b7280">${corridor.description}</div>
             </div>
         </div>
         <div class="corridor-info-item">
@@ -812,7 +812,7 @@ function showCorridorDetail(corridorId) {
             <i class="fas fa-shield-alt"></i>
             <div>
                 <div class="info-label">Recomendación</div>
-                <div class="info-value" style="font-size:12px; font-weight:400; color:#8fa3b8">${avgCat.advice}</div>
+                <div class="info-value" style="font-size:12px; font-weight:400; color:#6b7280">${avgCat.advice}</div>
             </div>
         </div>
 
@@ -849,7 +849,7 @@ function showCorridorDetail(corridorId) {
                 <i class="fas fa-arrows-alt-h"></i>
                 <div>
                     <div class="info-label">Dispersión de contaminantes</div>
-                    <div class="info-value" style="font-size:12px; font-weight:400; color:#8fa3b8">
+                    <div class="info-value" style="font-size:12px; font-weight:400; color:#6b7280">
                         PM2.5: ${fromData.pm25} → ${toData.pm25} µg/m³<br>
                         PM10: ${fromData.pm10} → ${toData.pm10} µg/m³<br>
                         O₃: ${fromData.o3} → ${toData.o3} ppb
@@ -952,7 +952,7 @@ function showHeatDetail(sensorId) {
                 <i class="fas fa-thermometer-empty"></i>
                 <div>
                     <div class="info-label">Mínima del día</div>
-                    <div class="info-value" style="color:#00b4d8">${heatData.minTemp.toFixed(1)}°C</div>
+                    <div class="info-value" style="color:#0ea5e9">${heatData.minTemp.toFixed(1)}°C</div>
                 </div>
             </div>
             <div class="hw-info-row">
@@ -973,14 +973,14 @@ function showHeatDetail(sensorId) {
                 <i class="fas fa-clock"></i>
                 <div>
                     <div class="info-label">Horarios seguros (&lt;35°C)</div>
-                    <div class="info-value" style="font-size:12px; font-weight:400; color:#8fa3b8">${safeText}</div>
+                    <div class="info-value" style="font-size:12px; font-weight:400; color:#6b7280">${safeText}</div>
                 </div>
             </div>
             <div class="hw-info-row">
                 <i class="fas fa-shield-alt"></i>
                 <div>
                     <div class="info-label">Recomendación</div>
-                    <div class="info-value" style="font-size:12px; font-weight:400; color:#8fa3b8">${
+                    <div class="info-value" style="font-size:12px; font-weight:400; color:#6b7280">${
                         cat.level === 'extreme' ? 'PELIGRO EXTREMO. No salir al exterior. Riesgo de golpe de calor. Mantenerse hidratado y en lugares con AC.' :
                         cat.level === 'high' ? 'Peligro alto. Limitar actividad al exterior. Usar protección solar y llevar agua.' :
                         cat.level === 'moderate' ? 'Precaución. Evitar esfuerzo físico intenso. Hidratarse frecuentemente.' :
@@ -1168,7 +1168,7 @@ function addUserMarker(lat, lng) {
         state.userMarker.bindPopup(`
             <div class="popup-content">
                 <div class="popup-header">
-                    <div class="popup-aqi-badge" style="background:#00b4d8; color:white">
+                    <div class="popup-aqi-badge" style="background:#0ea5e9; color:white">
                         <i class="fas fa-user"></i>
                     </div>
                     <div>
@@ -1198,8 +1198,8 @@ function addUserMarker(lat, lng) {
                     ` : ''}
                 </div>
                 ` : ''}
-                <div style="font-size:11px; color:#8fa3b8; padding:6px 0; border-top:1px solid rgba(255,255,255,0.06)">
-                    <i class="fas fa-info-circle" style="color:#00b4d8"></i>
+                <div style="font-size:11px; color:#6b7280; padding:6px 0; border-top:1px solid rgba(0,0,0,0.06)">
+                    <i class="fas fa-info-circle" style="color:#0ea5e9"></i>
                     Datos basados en el módulo ${nearest.sensor.zone}
                 </div>
             </div>
