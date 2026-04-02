@@ -102,6 +102,14 @@ const SENSORS = [
         lat: 32.6280,
         lng: -115.4780,
         type: 'urban'
+    },
+    {
+        id: 'S13',
+        name: 'Módulo Casa de la Cultura Progreso',
+        zone: 'Col. Progreso',
+        lat: 32.6089,
+        lng: -115.5068,
+        type: 'urban'
     }
 ];
 
