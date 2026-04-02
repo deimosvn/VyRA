@@ -792,6 +792,8 @@ body {
 .panel-content {
     padding: 0 20px 16px;
     max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transition: var(--transition);
 }
 
@@ -1295,6 +1297,8 @@ body {
     .panel-content {
         padding: 0 14px 12px;
         max-height: 180px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     /* Modal full-width */
