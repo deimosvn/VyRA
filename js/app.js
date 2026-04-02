@@ -697,6 +697,7 @@ function updateSensorList() {
                 <div class="sensor-item-info">
                     <div class="sensor-item-name">${sensor.name}</div>
                     <div class="sensor-item-zone">${sensor.zone}</div>
+                    <div class="sensor-item-quality" style="color:${category.color}; font-size:11px; font-weight:600; margin-top:2px">${category.label}</div>
                 </div>
                 <div class="sensor-item-aqi" style="color:${category.color}">${data.aqi}</div>
             </div>
@@ -1492,7 +1493,18 @@ function init() {
         refreshData();
     }, 10000);
 
-    showToast('VyRA iniciado — Monitoreando calidad del aire y olas de calor en Mexicali', 'success');
+    // Splash screen
+    const splashBtn = document.getElementById('splashEnter');
+    const splashScreen = document.getElementById('splashScreen');
+    if (splashBtn && splashScreen) {
+        splashBtn.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            setTimeout(() => {
+                splashScreen.remove();
+                state.map.invalidateSize();
+            }, 500);
+        });
+    }
 }
 
 // Start when DOM is ready
