@@ -155,6 +155,7 @@ body {
 .sidebar-content {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 16px;
 }
 
@@ -1186,12 +1187,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    body {
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
 
     /* Sidebar: full-height slide-in drawer */
     .sidebar {
