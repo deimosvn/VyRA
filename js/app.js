@@ -701,6 +701,13 @@ function updateSensorList() {
             const sensorId = item.dataset.sensor;
             const sensor = SENSORS.find(s => s.id === sensorId);
             if (sensor) {
+                // Close sidebar on mobile so the map is visible
+                if (isMobile()) {
+                    const sidebar = document.querySelector('.sidebar');
+                    if (!sidebar.classList.contains('collapsed')) {
+                        toggleSidebar();
+                    }
+                }
                 state.map.flyTo([sensor.lat, sensor.lng], 15, { duration: 0.8 });
                 state.markers[sensorId]?.openPopup();
             }
@@ -911,6 +918,12 @@ function updateHeatWaveUI() {
         el.addEventListener('click', () => {
             const sensor = SENSORS.find(s => s.id === el.dataset.sensor);
             if (sensor) {
+                if (isMobile()) {
+                    const sidebar = document.querySelector('.sidebar');
+                    if (!sidebar.classList.contains('collapsed')) {
+                        toggleSidebar();
+                    }
+                }
                 showHeatDetail(sensor.id);
                 state.map.flyTo([sensor.lat, sensor.lng], 15, { duration: 0.8 });
             }
@@ -1314,16 +1327,35 @@ function refreshData() {
 // ============================================================
 // EVENT HANDLERS
 // ============================================================
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    sidebar.classList.toggle('collapsed');
+    if (isMobile()) {
+        if (sidebar.classList.contains('collapsed')) {
+            overlay.classList.remove('active');
+        } else {
+            overlay.classList.add('active');
+        }
+    }
+    setTimeout(() => state.map.invalidateSize(), 350);
+}
+
 function setupEventHandlers() {
     // Sidebar toggle
-    document.getElementById('sidebarToggle').addEventListener('click', () => {
-        document.querySelector('.sidebar').classList.toggle('collapsed');
-        setTimeout(() => state.map.invalidateSize(), 350);
-    });
+    document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+    document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
 
-    document.getElementById('menuBtn').addEventListener('click', () => {
-        document.querySelector('.sidebar').classList.toggle('collapsed');
-        setTimeout(() => state.map.invalidateSize(), 350);
+    // Mobile overlay closes sidebar
+    document.getElementById('mobileOverlay').addEventListener('click', () => {
+        const sidebar = document.querySelector('.sidebar');
+        if (!sidebar.classList.contains('collapsed')) {
+            toggleSidebar();
+        }
     });
 
     // Panel toggle
@@ -1425,6 +1457,11 @@ function animateCorridors() {
 // INITIALIZATION
 // ============================================================
 function init() {
+    // Start sidebar collapsed on mobile
+    if (isMobile()) {
+        document.querySelector('.sidebar').classList.add('collapsed');
+    }
+
     initMap();
     generateAllData();
     addSensorMarkers();
