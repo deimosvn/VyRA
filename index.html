@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VyRA — Vigilancia y Red de Aire</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-wind"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>VyRA</h1>
+                    <span>Vigilancia y Red de Aire</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- General AQI Summary -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-line"></i> Índice General</h3>
+                <div class="aqi-general" id="aqiGeneral">
+                    <div class="aqi-value" id="aqiGeneralValue">--</div>
+                    <div class="aqi-label" id="aqiGeneralLabel">Cargando...</div>
+                    <div class="aqi-bar">
+                        <div class="aqi-bar-fill" id="aqiBarFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-filter"></i> Filtros</h3>
+                <div class="filter-group">
+                    <label>Contaminante</label>
+                    <select id="pollutantFilter">
+                        <option value="aqi">Índice AQI General</option>
+                        <option value="pm25">PM2.5</option>
+                        <option value="pm10">PM10</option>
+                        <option value="o3">Ozono (O₃)</option>
+                        <option value="co">Monóxido de Carbono</option>
+                        <option value="no2">Dióxido de Nitrógeno</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Visualización</label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-layer="sensors" title="Sensores">
+                            <i class="fas fa-map-marker-alt"></i> Sensores
+                        </button>
+                        <button class="toggle-btn active" data-layer="corridors" title="Pasillos">
+                            <i class="fas fa-route"></i> Pasillos
+                        </button>
+                        <button class="toggle-btn active" data-layer="heatmap" title="Zonas">
+                            <i class="fas fa-layer-group"></i> Zonas
+                        </button>
+                        <button class="toggle-btn active" data-layer="heatwave" title="Ola de Calor">
+                            <i class="fas fa-fire"></i> Calor
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heat Wave Alert -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-fire"></i> Ola de Calor</h3>
+                <div class="heatwave-summary" id="heatwaveSummary">
+                    <div class="hw-alert-card" id="hwAlertCard">
+                        <div class="hw-alert-icon">
+                            <i class="fas fa-temperature-high"></i>
+                        </div>
+                        <div class="hw-alert-info">
+                            <div class="hw-alert-level" id="hwAlertLevel">--</div>
+                            <div class="hw-alert-temp" id="hwAlertTemp">--°C promedio</div>
+                        </div>
+                    </div>
+                    <div class="hw-zones-danger" id="hwZonesDanger">
+                        <!-- Dynamic danger zones -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safe Hours -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-clock"></i> Horarios Seguros</h3>
+                <div class="safe-hours-panel" id="safeHoursPanel">
+                    <div class="safe-hours-timeline" id="safeTimeline">
+                        <!-- Dynamic timeline -->
+                    </div>
+                    <div class="safe-hours-recommendation" id="safeRecommendation">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Cargando recomendación...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensor List -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-satellite-dish"></i> Módulos Activos</h3>
+                <div class="sensor-list" id="sensorList">
+                    <!-- Dynamic sensor items -->
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="sidebar-section">
+                <h3><i class="fas fa-palette"></i> Escala AQI</h3>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#00e400"></span>
+                        <span>0-50 Buena</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#ffff00"></span>
+                        <span>51-100 Moderada</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#ff7e00"></span>
+                        <span>101-150 Dañina (Sensibles)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#ff0000"></span>
+                        <span>151-200 Dañina</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#8f3f97"></span>
+                        <span>201-300 Muy Dañina</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background:#7e0023"></span>
+                        <span>301+ Peligrosa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <p><i class="fas fa-clock"></i> Última actualización: <span id="lastUpdate">--:--</span></p>
+            <p><i class="fas fa-sync-alt fa-spin"></i> Datos simulados en tiempo real</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span><i class="fas fa-map-marked-alt"></i> Mexicali, Baja California</span>
+                </div>
+            </div>
+            <div class="top-bar-center">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar zona o sensor..." id="searchInput">
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <div class="wind-info">
+                    <i class="fas fa-wind"></i>
+                    <span id="windInfo">Viento: -- km/h</span>
+                </div>
+                <div class="temp-info">
+                    <i class="fas fa-temperature-high"></i>
+                    <span id="tempInfo">--°C</span>
+                </div>
+                <button class="icon-btn" id="locateBtn" title="Mi ubicación">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button class="icon-btn" id="refreshBtn" title="Actualizar datos">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="icon-btn" id="fullscreenBtn" title="Pantalla completa">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- Bottom Stats Panel -->
+        <div class="bottom-panel" id="bottomPanel">
+            <div class="panel-header">
+                <h3><i class="fas fa-chart-bar"></i> Resumen de Calidad del Aire — Mexicali</h3>
+                <button class="panel-toggle" id="panelToggle">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="panel-content" id="panelContent">
+                <div class="stats-grid">
+                    <div class="stat-card" id="statBest">
+                        <div class="stat-icon good"><i class="fas fa-smile"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Mejor Zona</span>
+                            <span class="stat-value" id="bestZone">--</span>
+                            <span class="stat-detail" id="bestZoneAqi">AQI: --</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="statWorst">
+                        <div class="stat-icon bad"><i class="fas fa-frown"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Peor Zona</span>
+                            <span class="stat-value" id="worstZone">--</span>
+                            <span class="stat-detail" id="worstZoneAqi">AQI: --</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon neutral"><i class="fas fa-wind"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Dirección del Viento</span>
+                            <span class="stat-value" id="windDirection">--</span>
+                            <span class="stat-detail" id="windSpeed">-- km/h</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon neutral"><i class="fas fa-satellite-dish"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Módulos Activos</span>
+                            <span class="stat-value" id="activeSensors">--</span>
+                            <span class="stat-detail">En línea</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon neutral"><i class="fas fa-route"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pasillos Monitoreados</span>
+                            <span class="stat-value" id="activeCorridors">--</span>
+                            <span class="stat-detail">Rutas de dispersión</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="statHeatwave">
+                        <div class="stat-icon heat"><i class="fas fa-fire"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Ola de Calor</span>
+                            <span class="stat-value" id="heatwaveMax">--°C</span>
+                            <span class="stat-detail" id="heatwaveStatus">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal" id="detailModal">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Detalle del Sensor</h2>
+                    <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Heat Wave Detail Panel -->
+        <div class="heatwave-panel" id="heatwavePanel">
+            <div class="hw-panel-header">
+                <h3><i class="fas fa-fire"></i> <span id="hwPanelTitle">Detalle de Ola de Calor</span></h3>
+                <button class="hw-panel-close" id="hwPanelClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="hw-panel-body" id="hwPanelBody">
+                <!-- Dynamic heat wave info -->
+            </div>
+        </div>
+
+        <!-- User Location Popup -->
+        <div class="location-banner" id="locationBanner">
+            <div class="location-banner-content">
+                <i class="fas fa-map-pin"></i>
+                <span id="locationText">Detectando tu ubicación...</span>
+            </div>
+            <button id="locationBannerClose"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- Corridor Detail Panel -->
+        <div class="corridor-panel" id="corridorPanel">
+            <div class="corridor-header">
+                <h3 id="corridorTitle"><i class="fas fa-route"></i> Pasillo de Dispersión</h3>
+                <button class="corridor-close" id="corridorClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="corridor-body" id="corridorBody">
+                <!-- Dynamic corridor info -->
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
